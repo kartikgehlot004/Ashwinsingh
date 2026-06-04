@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Dr. Ashwin Singh Chouhan Portfolio fixed",
+  "description": "3D Animated, highly responsive colorful personal website of Dr. Ashwin Singh Chouhan (Pharmacologist \u0026 Researcher) detailing his research, publications, articles, and scientific logs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
