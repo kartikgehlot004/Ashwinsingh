@@ -45,7 +45,20 @@ export default function HomeSection({ setCurrentTab }: HomeSectionProps) {
   const sampleArticles = articles.slice(0, 3);
   const samplePublications = publications.slice(0, 2);
   const sampleNotes = notes.slice(0, 3);
-  const sampleMilestones = timeline.filter(m => ['2013', '2021', '2026', '2015', '2018', '2023'].includes(m.year)).slice(0, 3);
+  const sampleMilestones = (() => {
+    // Attempt preferred key years first
+    const preferredYears = ['2013', '2021', '2026', '2015', '2018', '2023'];
+    const filtered = timeline.filter(m => preferredYears.includes(m.year));
+    if (filtered.length >= 2) {
+      return filtered.slice(0, 3);
+    }
+    // Fallback to taking the latest items by chronological order descending
+    const sorted = [...timeline].sort((a, b) => parseInt(b.year) - parseInt(a.year));
+    if (sorted.length >= 2) {
+      return sorted.slice(0, 3);
+    }
+    return timeline.slice(0, 3);
+  })();
 
   // Tagline typewriter effect
   useEffect(() => {
@@ -291,6 +304,20 @@ export default function HomeSection({ setCurrentTab }: HomeSectionProps) {
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* View More Button below the milestones */}
+            <div className="pt-4 border-t border-slate-800/50 flex justify-center">
+              <button
+                onClick={() => {
+                  sessionStorage.setItem('scroll_to_milestones', 'true');
+                  setCurrentTab('about');
+                }}
+                className="group px-6 py-2.5 bg-slate-950 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-600 border border-slate-800 hover:border-purple-500/50 text-slate-300 hover:text-white rounded-xl text-xs font-bold font-mono uppercase tracking-wider flex items-center gap-1.5 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-indigo-500/10 focus:outline-none"
+              >
+                View More Milestones
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </button>
             </div>
           </div>
 

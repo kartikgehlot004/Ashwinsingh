@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useData } from './DataContext';
 import { TimelineMilestone } from '../types';
@@ -10,6 +10,18 @@ export default function AboutSection() {
 
   const selectedMilestone = selectedMilestoneState || timeline[0];
   const setSelectedMilestone = (mile: TimelineMilestone | null) => setSelectedMilestoneState(mile);
+
+  useEffect(() => {
+    if (sessionStorage.getItem('scroll_to_milestones') === 'true') {
+      sessionStorage.removeItem('scroll_to_milestones');
+      setTimeout(() => {
+        const el = document.getElementById('roadmap-timeline-scroller') || document.getElementById('about-section');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 600);
+    }
+  }, []);
 
   // Achievement type color mappings
   const typeIcons = {
