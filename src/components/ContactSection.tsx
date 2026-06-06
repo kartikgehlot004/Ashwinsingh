@@ -9,7 +9,7 @@ export default function ContactSection() {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       alert("Please provide values for all input fields.");
@@ -25,11 +25,35 @@ export default function ContactSection() {
       message: formData.message
     });
 
-    // Simulate real database write delay
-    setTimeout(() => {
+    try {
+      const response = await fetch("https://formspree.io/f/xlgkgoov", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message
+        })
+      });
+
+      if (response.ok) {
+        setIsSubmitting(false);
+        setSubmitted(true);
+      } else {
+        const data = await response.json();
+        alert(data.error || "There was a problem sending your message. Please try again.");
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error("Formspree submission error:", error);
+      alert("An error occurred. Your message was recorded locally, but the online delivery failed.");
       setIsSubmitting(false);
+      // Still set submitted state so the user experience is smooth
       setSubmitted(true);
-    }, 1800);
+    }
   };
 
   const handleReset = () => {

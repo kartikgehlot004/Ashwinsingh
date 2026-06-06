@@ -116,7 +116,7 @@ export default function HomeSection({ setCurrentTab }: HomeSectionProps) {
   };
 
   // Mini form handler
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
     setFormLoading(true);
@@ -128,12 +128,39 @@ export default function HomeSection({ setCurrentTab }: HomeSectionProps) {
       message: formData.message
     });
     
-    setTimeout(() => {
+    try {
+      const response = await fetch("https://formspree.io/f/xlgkgoov", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message
+        })
+      });
+
+      if (response.ok) {
+        setFormLoading(false);
+        setFormSubmitted(true);
+        setFormData({ name: '', email: '', message: '' });
+        setTimeout(() => setFormSubmitted(false), 5000);
+      } else {
+        const data = await response.json();
+        alert(data.error || "There was a problem sending your message. Please try again.");
+        setFormLoading(false);
+      }
+    } catch (error) {
+      console.error("Formspree submission error:", error);
+      alert("An error occurred. Your message was recorded locally, but the online delivery failed.");
       setFormLoading(false);
+      // Still set submitted state so the user experience is smooth
       setFormSubmitted(true);
       setFormData({ name: '', email: '', message: '' });
       setTimeout(() => setFormSubmitted(false), 5000);
-    }, 1200);
+    }
   };
 
   const stats = (homeConfig.stats || []).map((s, index) => {
